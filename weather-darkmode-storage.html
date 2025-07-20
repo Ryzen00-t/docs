@@ -1,0 +1,119 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Weather App with Dark Mode</title>
+  <style>
+    :root {
+      --bg-gradient: linear-gradient(135deg, #74ebd5, #ACB6E5);
+      --text-color: #fff;
+      --card-bg: rgba(255, 255, 255, 0.15);
+    }
+
+    [data-theme='dark'] {
+      --bg-gradient: linear-gradient(135deg, #2c3e50, #4ca1af);
+      --text-color: #eee;
+      --card-bg: rgba(0, 0, 0, 0.25);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-color);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      padding: 20px;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+    h1 {
+      margin-top: 20px;
+    }
+    .glass {
+      backdrop-filter: blur(10px);
+      background: var(--card-bg);
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+      padding: 20px;
+      margin: 20px;
+      width: 90%;
+      max-width: 500px;
+    }
+    input, button {
+      padding: 10px;
+      border-radius: 5px;
+      border: none;
+      margin-top: 10px;
+    }
+    button {
+      background-color: #4a90e2;
+      color: white;
+      cursor: pointer;
+    }
+    .toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+    }
+  </style>
+</head>
+<body>
+  <button class="toggle" onclick="toggleTheme()">🌗 Toggle Mode</button>
+  <h1>🌤 Weather App</h1>
+
+  <div class="glass">
+    <h2>Check Weather</h2>
+    <input type="text" id="cityInput" placeholder="Enter city name" />
+    <button onclick="getWeather()">Get Weather</button>
+    <p id="weatherResult"></p>
+  </div>
+
+  <script>
+    const theme = localStorage.getItem('theme');
+    if (theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const newTheme = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+    }
+
+    const savedCity = localStorage.getItem("lastCity");
+    if (savedCity) {
+      document.getElementById("cityInput").value = savedCity;
+      getWeather(savedCity);
+    }
+
+    async function getWeather(saved = null) {
+      const city = saved || document.getElementById("cityInput").value;
+      const result = document.getElementById("weatherResult");
+      localStorage.setItem("lastCity", city);
+
+      const options = {
+        method: 'GET',
+        headers: {
+          'X-RapidAPI-Key': '3bc89e1223msh98a1f1f678fc2ecp113857jsnedae0bc743ef',
+          'X-RapidAPI-Host': 'weather-by-api-ninjas.p.rapidapi.com'
+        }
+      };
+
+      try {
+        const response = await fetch(`https://weather-by-api-ninjas.p.rapidapi.com/v1/weather?city=${city}`, options);
+        const data = await response.json();
+        result.innerText = `🌡 Temperature: ${data.temp}°C | 💨 Wind: ${data.wind_speed} km/h | 💧 Humidity: ${data.humidity}%`;
+      } catch (error) {
+        result.innerText = "Error fetching weather.";
+      }
+    }
+  </script>
+</body>
+</html>
