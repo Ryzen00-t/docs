@@ -19,7 +19,7 @@ permissions:
 jobs:
   repo-sync:
     if: github.repository == 'github/docs-internal' || github.repository == 'github/docs'
-    name: Repo Sync
+    name: Ryzen00-t/docs
     runs-on: ubuntu-latest
     steps:
       - name: Check out repo
